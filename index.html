@@ -10,6 +10,7 @@
     button { padding: 6px 12px; margin-right: 10px; }
     ul#imageLinks li { margin-bottom: 5px; }
   </style>
+  <script src="https://cdn.jsdelivr.net/pyodide/v0.23.4/full/pyodide.js"></script>
 </head>
 <body>
   <h1>Markdown to LaTeX + Manual Image Downloads</h1>
@@ -72,6 +73,9 @@
     function escapeRegExp(string) {
       return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     }
+    let pyodide = await loadPyodide();
+    await pyodide.loadPackage("micropip");
+    await pyodide.loadPackage("zipfile");
     convertBtn.onclick = async () => {
       const url = urlInput.value.trim();
       if (!url.startsWith("https://")) {
@@ -116,7 +120,68 @@
         } else {
           statusimage.textContent = "\n✅ No image links found.";
         }
-    
+
+        const imageLinks = Array.from(document.querySelectorAll("#imageLinks a")).map(a => a.href);
+
+        // Convert image list into Python list string
+        const pythonList = JSON.stringify(imageLinks);
+        
+        // Define Python script as a string
+        const pyScript = `
+        import re
+        import os
+        from pyodide.http import pyfetch
+        from pathlib import Path
+        
+        urls = ${pythonList}
+        image_map = [("figure" + str(i+1), url) for i, url in enumerate(urls)]
+        
+        Path("images").mkdir(exist_ok=True)
+        
+        for name, url in image_map:
+            print(f"🔗 Downloading {name} ← {url}")
+            try:
+                resp = await pyfetch(url, method="GET", headers={"User-Agent": "Mozilla/5.0"})
+                content_type = resp.headers.get("Content-Type", "")
+                ext = {
+                    "image/png": ".png",
+                    "image/jpeg": ".jpg",
+                    "image/jpg": ".jpg",
+                    "image/gif": ".gif",
+                    "image/webp": ".webp",
+                }.get(content_type.split(";")[0], ".png")
+        
+                data = await resp.bytes()
+                with open(f"images/{name}{ext}", "wb") as f:
+                    f.write(data)
+                print(f"✅ Saved as images/{name}{ext}")
+            except Exception as e:
+                print(f"❌ Failed to fetch {url}: {e}")
+        `;
+        
+        // Run the Python script
+        await pyodide.runPythonAsync(pyScript);
+        
+        // Now fetch all images from pyodide's virtual FS
+        const zip = new JSZip();
+        const imageFolder = zip.folder("images");
+        
+        // Read all files from Pyodide FS and add to zip
+        for (let file of pyodide.FS.readdir("/images")) {
+          if (file === "." || file === "..") continue;
+          const data = pyodide.FS.readFile(`/images/${file}`);
+          imageFolder.file(file, data);
+        }
+        
+        // Add LaTeX file too
+        zip.file("document.tex", output.textContent);
+        
+        // Download zip
+        const blob = await zip.generateAsync({ type: "blob" });
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(blob);
+        a.download = "latex_with_images.zip";
+        a.click();
         output.textContent = latex;
     
       } catch (err) {
