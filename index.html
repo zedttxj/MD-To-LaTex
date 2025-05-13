@@ -19,6 +19,7 @@
     value="https://raw.githubusercontent.com/zedttxj/Image-Processing-Tool-with-Matlab/main/optional/README.md" />
 
   <button id="convertBtn">Convert</button>
+  <button id="downloadTexBtn">Download .tex</button>
 
   <h2>LaTeX Output</h2>
   <pre id="latexOutput">Waiting...</pre>
@@ -118,6 +119,13 @@
         }
     
         output.textContent = latex;
+        downloadTexBtn.onclick = () => {
+          const blob = new Blob([output.textContent], { type: "text/x-tex" });
+          const link = document.createElement("a");
+          link.href = URL.createObjectURL(blob);
+          link.download = "document.tex";
+          link.click();
+        };
     
       } catch (err) {
         statusimage.textContent = "❌ Error: " + err.message;
