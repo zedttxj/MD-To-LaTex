@@ -103,7 +103,6 @@
           for (const link of imageUrls) {
             try {
               let actualUrl = link;
-              console.log(link);
               // If it's a GitHub attachment page, extract real image
               if (link.includes("github.com/user-attachments/")) {
                 output.textContent += `\n🔍 Resolving GitHub asset: ${link}`;
