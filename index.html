@@ -33,7 +33,6 @@
     const textarea = document.getElementById("mdInput");
     const btn = document.getElementById("convertBtn");
     const output = document.getElementById("latexOutput");
-    const rendered = document.getElementById("renderedLatex");
 
     const pandoc = new Pandoc();
     output.textContent = "Downloading wasm...";
@@ -51,11 +50,8 @@
       });
 
       output.textContent = result;
-      const wrapped = inlineToggle.checked
-      ? `\\(${result}\\)`
-      : `\\[${result}\\]`;
-      rendered.innerHTML = wrapped;
-      MathJax.typesetPromise().catch(err => console.error("MathJax error:", err));
+      document.getElementById("renderedLatex").innerHTML = `\\(${latex}\\)`;
+      MathJax.typeset();
     };
   </script>
 </body>
