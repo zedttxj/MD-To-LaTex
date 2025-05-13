@@ -2,48 +2,69 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Markdown to LaTeX Converter (Pandoc-WASM)</title>
+  <title>Markdown to LaTeX + Render (Pandoc-WASM + MathJax)</title>
   <style>
     body { font-family: sans-serif; padding: 20px; }
     textarea { width: 100%; height: 200px; margin-bottom: 10px; }
-    pre { background: #f4f4f4; padding: 10px; white-space: pre-wrap; }
+    pre, #renderedLatex { background: #f4f4f4; padding: 10px; white-space: pre-wrap; }
+    #renderedLatex { margin-top: 20px; border: 1px solid #ccc; }
   </style>
+  <!-- Load MathJax -->
+  <script>
+    window.MathJax = {
+      tex: { inlineMath: [['\\(', '\\)'], ['$', '$']] },
+      svg: { fontCache: 'global' }
+    };
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" async></script>
 </head>
 <body>
-  <h1>Markdown to LaTeX Converter</h1>
+  <h1>Markdown to LaTeX (with Visual Render)</h1>
+
   <textarea id="mdInput" placeholder="Enter Markdown here..."># Example
 
-This is **bold**, and this is *italic*.
+This is **bold**, and here is math: `$x^2 + y^2 = z^2$`
 
-- List item 1
-- List item 2
+- Item 1
+- Item 2
   </textarea>
+
   <button id="convertBtn">Convert to LaTeX</button>
-  <h2>LaTeX Output:</h2>
-  <pre id="latexOutput">Loading pandoc-wasm...</pre>
+
+  <h2>Raw LaTeX Output:</h2>
+  <pre id="latexOutput">Loading...</pre>
+
+  <h2>Rendered LaTeX:</h2>
+  <div id="renderedLatex">Waiting...</div>
 
   <script type="module">
     import init, { convert } from "https://cdn.jsdelivr.net/npm/pandoc-wasm@0.2.0/pandoc.mjs";
 
-    const output = document.getElementById("latexOutput");
-    const button = document.getElementById("convertBtn");
-    const input = document.getElementById("mdInput");
+    const mdInput = document.getElementById("mdInput");
+    const btn = document.getElementById("convertBtn");
+    const rawOutput = document.getElementById("latexOutput");
+    const rendered = document.getElementById("renderedLatex");
 
-    output.textContent = "Initializing pandoc-wasm...";
-
-    // Initialize pandoc-wasm
+    rawOutput.textContent = "Initializing pandoc-wasm...";
     await init();
+    rawOutput.textContent = "Ready! Paste Markdown and click Convert.";
 
-    output.textContent = "Ready! Paste your Markdown and click Convert.";
+    btn.onclick = async () => {
+      const md = mdInput.value;
+      rawOutput.textContent = "Converting...";
+      rendered.innerHTML = "Rendering...";
 
-    button.onclick = async () => {
-      output.textContent = "Converting...";
-      const md = input.value;
       try {
-        const tex = await convert(md, "markdown", "latex");
-        output.textContent = tex;
+        const latex = await convert(md, "markdown", "latex");
+        rawOutput.textContent = latex;
+
+        // Escape LaTeX to safely display inline
+        const escaped = latex.replace(/\\/g, '\\\\').replace(/\$/g, '\\$');
+        rendered.innerHTML = `\\(${escaped}\\)`;
+        MathJax.typeset();
       } catch (err) {
-        output.textContent = "Error during conversion:\n" + err;
+        rawOutput.textContent = "Conversion error:\n" + err;
+        rendered.innerHTML = "";
       }
     };
   </script>
