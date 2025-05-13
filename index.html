@@ -51,7 +51,7 @@
       });
 
       output.textContent = result;
-      rendered.innerHTML = `\\(${result.replace(/\\/g, '\\\\')}\\)`;
+      rendered.innerHTML = result;
       MathJax.typeset();
     };
   </script>
