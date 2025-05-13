@@ -22,7 +22,7 @@
 
   <h2>LaTeX Output</h2>
   <pre id="latexOutput">Waiting...</pre>
-  <pre id="status_image"></pre>
+  <div id="status_image"></div>
 
   <h3>📸 Manual Image Download Links</h3>
   <ul id="imageLinks"></ul>
@@ -99,7 +99,7 @@
           output.textContent += `\n📸 Found ${imageUrls.length} image(s). Replacing LaTeX links...`;
     
           imageUrls.forEach((link, index) => {
-            const filename = `images/figure${index + 1}` + link.split("/").pop().split(".").pop().replace(/[^a-zA-Z0-9]/g, "") || ".png";
+            const filename = `images/figure${index + 1}` || ".png";
             const regex = new RegExp(`\\\\includegraphics\\{${escapeRegExp(link)}\\}`, "g");
             latex = latex.replace(regex, `\\includegraphics{${filename}}`);
     
