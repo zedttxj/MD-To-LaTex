@@ -2,34 +2,37 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Markdown to LaTeX + Image Downloader</title>
-  <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+  <title>Markdown to LaTeX + Image Listing</title>
   <style>
     body { font-family: sans-serif; padding: 20px; max-width: 800px; margin: auto; }
     input[type="text"] { width: 100%; padding: 8px; margin: 10px 0; font-family: monospace; }
     pre { background: #f4f4f4; padding: 10px; white-space: pre-wrap; border-radius: 5px; }
     button { padding: 6px 12px; margin-right: 10px; }
+    ul#imageLinks li { margin-bottom: 5px; }
   </style>
 </head>
 <body>
-  <h1>Convert GitHub Markdown to LaTeX + Download Images</h1>
+  <h1>Markdown to LaTeX + Manual Image Downloads</h1>
 
   <label><strong>Raw GitHub Markdown URL:</strong></label>
   <input type="text" id="urlInput"
     value="https://raw.githubusercontent.com/zedttxj/Image-Processing-Tool-with-Matlab/main/optional/README.md" />
 
-  <button id="convertBtn">Convert + Zip</button>
+  <button id="convertBtn">Convert</button>
 
   <h2>LaTeX Output</h2>
   <pre id="latexOutput">Waiting...</pre>
+
   <h3>📸 Manual Image Download Links</h3>
   <ul id="imageLinks"></ul>
+
   <script type="module">
     import { Pandoc } from "https://cdn.jsdelivr.net/npm/pandoc-wasm@0.0.2/+esm";
 
     const urlInput = document.getElementById("urlInput");
     const convertBtn = document.getElementById("convertBtn");
     const output = document.getElementById("latexOutput");
+    const imageLinksList = document.getElementById("imageLinks");
 
     const pandoc = new Pandoc();
     output.textContent = "Initializing pandoc-wasm...";
@@ -53,22 +56,15 @@
 
     async function resolveGitHubAttachment(link) {
       const response = await fetch(link, { method: "GET", redirect: "manual" });
-    
-      // GitHub usually returns a 302 redirect to S3
       if (response.status === 302 || response.status === 301) {
         const redirectUrl = response.headers.get("Location");
         if (redirectUrl && redirectUrl.includes("github-production-user-asset")) {
           return redirectUrl;
         }
       }
-    
-      // Fallback: parse HTML
       const html = await response.text();
       const match = html.match(/(https:\/\/github-production-user-asset-[^"]+)/);
-      if (match) {
-        return match[1];
-      }
-    
+      if (match) return match[1];
       throw new Error("Could not resolve asset redirect from: " + link);
     }
 
@@ -78,6 +74,8 @@
         output.textContent = "❌ Invalid URL.";
         return;
       }
+
+      imageLinksList.innerHTML = "";
 
       try {
         output.textContent = "📥 Fetching Markdown...";
@@ -92,35 +90,22 @@
         });
         output.textContent = latex;
 
-        // Extract image links
         const imageUrls = extractImageLinks(markdown, url);
-        const zip = new JSZip();
-        zip.file("document.tex", latex);
-
         if (imageUrls.length > 0) {
-          output.textContent += `\n📸 Downloading ${imageUrls.length} image(s)...`;
-          const imageList = document.getElementById("imageLinks");
-          imageList.innerHTML = ""; // Clear previous list
-          
-          imageUrls.forEach((imgUrl, i) => {
+          output.textContent += `\n📸 Found ${imageUrls.length} image(s). Listed below.`;
+          imageUrls.forEach((link, index) => {
             const li = document.createElement("li");
             const a = document.createElement("a");
-            a.href = imgUrl;
-            a.textContent = `Image ${i + 1}`;
+            a.href = link;
+            a.textContent = `Image ${index + 1}: ${link}`;
             a.target = "_blank";
-            a.download = ""; // browser may prompt download if it's an image
             li.appendChild(a);
-            imageList.appendChild(li);
+            imageLinksList.appendChild(li);
           });
-
+        } else {
+          output.textContent += "\n✅ No image links found.";
         }
 
-        output.textContent += `\n📦 Creating ZIP...`;
-        const zipBlob = await zip.generateAsync({ type: "blob" });
-        const link = document.createElement("a");
-        link.href = URL.createObjectURL(zipBlob);
-        link.download = "converted_latex_with_images.zip";
-        link.click();
       } catch (err) {
         output.textContent = "❌ Error: " + err.message;
         console.error(err);
