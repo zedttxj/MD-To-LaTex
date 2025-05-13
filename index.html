@@ -50,6 +50,15 @@
       return links;
     }
 
+    async function resolveGitHubAttachment(link) {
+      const html = await fetch(link).then(res => res.text());
+      const match = html.match(/<img[^>]+src="(https:\/\/user-images\.githubusercontent\.com\/[^"]+)"/);
+      if (match) {
+        return match[1];
+      }
+      throw new Error("Could not extract image from GitHub attachment: " + link);
+    }
+
     async function fetchImageAsBlob(url) {
       const response = await fetch(url);
       if (!response.ok) throw new Error(`Failed to fetch ${url}`);
@@ -86,18 +95,22 @@
           const imgFolder = zip.folder("images");
 
           for (const link of imageUrls) {
-            if (link.includes("github.com/user-attachments/")) {
-              console.warn(`⚠️ Skipping unsupported GitHub asset proxy: ${link}`);
-              continue;
-            }
-          
             try {
-              const blob = await fetchImageAsBlob(link);
-              const filename = link.split("/").pop().split("?")[0]; // clean querystring
+              let actualUrl = link;
+          
+              // If it's a GitHub attachment page, extract real image
+              if (link.includes("github.com/user-attachments/")) {
+                output.textContent += `\n🔍 Resolving GitHub asset: ${link}`;
+                actualUrl = await resolveGitHubAttachment(link);
+              }
+          
+              const blob = await fetchImageAsBlob(actualUrl);
+              const filename = actualUrl.split("/").pop().split("?")[0];
               imgFolder.file(filename, blob);
-              console.log(`✓ Added image: ${filename}`);
+              console.log(`✓ Added: ${filename}`);
             } catch (err) {
               console.warn(`✗ Failed to fetch image: ${link}`, err);
+              output.textContent += `\n❌ Could not fetch: ${link}`;
             }
           }
 
