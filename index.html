@@ -86,14 +86,21 @@
           const imgFolder = zip.folder("images");
 
           for (const link of imageUrls) {
+            if (link.includes("github.com/user-attachments/")) {
+              console.warn(`⚠️ Skipping unsupported GitHub asset proxy: ${link}`);
+              continue;
+            }
+          
             try {
               const blob = await fetchImageAsBlob(link);
-              const filename = link.split("/").pop();
+              const filename = link.split("/").pop().split("?")[0]; // clean querystring
               imgFolder.file(filename, blob);
+              console.log(`✓ Added image: ${filename}`);
             } catch (err) {
-              console.warn("Failed to fetch image:", link);
+              console.warn(`✗ Failed to fetch image: ${link}`, err);
             }
           }
+
         }
 
         output.textContent += `\n📦 Creating ZIP...`;
