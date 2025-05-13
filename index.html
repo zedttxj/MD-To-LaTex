@@ -41,7 +41,6 @@
 
     btn.onclick = async () => {
       output.textContent = "Converting...";
-      rendered.innerHTML = "";
 
       const md = textarea.value;
       const result = await pandoc.run({
