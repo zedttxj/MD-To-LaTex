@@ -51,18 +51,24 @@
     }
 
     async function resolveGitHubAttachment(link) {
-      const html = await fetch(link).then(res => res.text());
-      const match = html.match(/<img[^>]+src="(https:\/\/user-images\.githubusercontent\.com\/[^"]+)"/);
+      const response = await fetch(link, { method: "GET", redirect: "manual" });
+    
+      // GitHub usually returns a 302 redirect to S3
+      if (response.status === 302 || response.status === 301) {
+        const redirectUrl = response.headers.get("Location");
+        if (redirectUrl && redirectUrl.includes("github-production-user-asset")) {
+          return redirectUrl;
+        }
+      }
+    
+      // Fallback: parse HTML
+      const html = await response.text();
+      const match = html.match(/(https:\/\/github-production-user-asset-[^"]+)/);
       if (match) {
         return match[1];
       }
-      throw new Error("Could not extract image from GitHub attachment: " + link);
-    }
-
-    async function fetchImageAsBlob(url) {
-      const response = await fetch(url);
-      if (!response.ok) throw new Error(`Failed to fetch ${url}`);
-      return await response.blob();
+    
+      throw new Error("Could not resolve asset redirect from: " + link);
     }
 
     convertBtn.onclick = async () => {
