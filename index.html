@@ -2,70 +2,57 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Markdown to LaTeX + Render (Pandoc-WASM + MathJax)</title>
+  <title>Markdown to LaTeX (pandoc-wasm)</title>
   <style>
-    body { font-family: sans-serif; padding: 20px; }
-    textarea { width: 100%; height: 200px; margin-bottom: 10px; }
-    pre, #renderedLatex { background: #f4f4f4; padding: 10px; white-space: pre-wrap; }
-    #renderedLatex { margin-top: 20px; border: 1px solid #ccc; }
+    textarea { width: 100%; height: 200px; }
+    pre, #renderedLatex { background: #f0f0f0; padding: 10px; white-space: pre-wrap; }
   </style>
-  <!-- Load MathJax -->
+  <!-- MathJax for rendering LaTeX -->
   <script>
     window.MathJax = {
-      tex: { inlineMath: [['\\(', '\\)'], ['$', '$']] },
+      tex: { inlineMath: [['$', '$'], ['\\(', '\\)']] },
       svg: { fontCache: 'global' }
     };
   </script>
   <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" async></script>
 </head>
 <body>
-  <h1>Markdown to LaTeX (with Visual Render)</h1>
+  <h1>Markdown to LaTeX Converter</h1>
+  <textarea id="mdInput"># Hello World\nThis is **bold** text and some math: $x^2 + y^2 = z^2$</textarea>
+  <button id="convertBtn">Convert</button>
 
-  <textarea id="mdInput" placeholder="Enter Markdown here..."># Example
+  <h2>LaTeX Output</h2>
+  <pre id="latexOutput">Initializing...</pre>
 
-This is **bold**, and here is math: `$x^2 + y^2 = z^2$`
-
-- Item 1
-- Item 2
-  </textarea>
-
-  <button id="convertBtn">Convert to LaTeX</button>
-
-  <h2>Raw LaTeX Output:</h2>
-  <pre id="latexOutput">Loading...</pre>
-
-  <h2>Rendered LaTeX:</h2>
+  <h2>Rendered Output</h2>
   <div id="renderedLatex">Waiting...</div>
 
   <script type="module">
-    import init, { convert } from "https://cdn.jsdelivr.net/npm/pandoc-wasm@0.1.0/pandoc.mjs";
+    import { Pandoc } from "https://cdn.jsdelivr.net/npm/pandoc-wasm@0.0.2/+esm";
 
-    const mdInput = document.getElementById("mdInput");
+    const textarea = document.getElementById("mdInput");
     const btn = document.getElementById("convertBtn");
-    const rawOutput = document.getElementById("latexOutput");
+    const output = document.getElementById("latexOutput");
     const rendered = document.getElementById("renderedLatex");
 
-    rawOutput.textContent = "Initializing pandoc-wasm...";
-    await init();
-    rawOutput.textContent = "Ready! Paste Markdown and click Convert.";
+    const pandoc = new Pandoc();
+    output.textContent = "Downloading wasm...";
+    await pandoc.init();
+    output.textContent = "Ready.";
 
     btn.onclick = async () => {
-      const md = mdInput.value;
-      rawOutput.textContent = "Converting...";
-      rendered.innerHTML = "Rendering...";
+      output.textContent = "Converting...";
+      rendered.innerHTML = "";
 
-      try {
-        const latex = await convert(md, "markdown", "latex");
-        rawOutput.textContent = latex;
+      const md = textarea.value;
+      const result = await pandoc.run({
+        text: md,
+        options: { from: "markdown", to: "latex" }
+      });
 
-        // Escape LaTeX to safely display inline
-        const escaped = latex.replace(/\\/g, '\\\\').replace(/\$/g, '\\$');
-        rendered.innerHTML = `\\(${escaped}\\)`;
-        MathJax.typeset();
-      } catch (err) {
-        rawOutput.textContent = "Conversion error:\n" + err;
-        rendered.innerHTML = "";
-      }
+      output.textContent = result;
+      rendered.innerHTML = `\\(${result.replace(/\\/g, '\\\\')}\\)`;
+      MathJax.typeset();
     };
   </script>
 </body>
