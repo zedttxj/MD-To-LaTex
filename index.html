@@ -89,11 +89,40 @@
         const markdown = await mdResponse.text();
     
         output.textContent = "🔄 Converting to LaTeX...";
+        
+        function tropicalToLatex(unicodeStr) {
+          return unicodeStr
+            .replace(/μ/g, '\\mu_{')
+            .replace(/𝜈/g, '\\nu_{')
+            .replace(/₀/g, '0}')
+            .replace(/₁/g, '1}')
+            .replace(/₂/g, '2}')
+            .replace(/₃/g, '3}')
+            .replace(/₄/g, '4}')
+            .replace(/₅/g, '5}')
+            .replace(/₆/g, '6}')
+            .replace(/₇/g, '7}')
+            .replace(/₈/g, '8}')
+            .replace(/₉/g, '9}')
+            .replace(/⨂/g, '\\otimes')
+            .replace(/⊕/g, '\\oplus')
+            .replace(/x⁰/g, ' x^0')
+            .replace(/x¹/g, ' x^1')
+            .replace(/x²/g, ' x^2')
+            .replace(/x³/g, ' x^3')
+            .replace(/x⁴/g, ' x^4')
+            .replace(/x⁵/g, ' x^5')
+            .replace(/x⁶/g, ' x^6')
+            .replace(/x⁷/g, ' x^7')
+            .replace(/x⁸/g, ' x^8')
+            .replace(/x⁹/g, ' x^9')
+            .replace(/ᵀ/g, '^T');
+        }
         let latex = await pandoc.run({
           text: markdown,
           options: { from: "markdown", to: "latex" }
         });
-    
+        latex = tropicalToLatex(latex);
         const imageUrls = extractImageLinks(markdown, url);
     
         if (imageUrls.length > 0) {
@@ -117,7 +146,7 @@
         } else {
           statusimage.textContent = "\n✅ No image links found.";
         }
-    
+        
         output.textContent = latex;
         downloadTexBtn.onclick = () => {
           const blob = new Blob([output.textContent], { type: "text/x-tex" });
