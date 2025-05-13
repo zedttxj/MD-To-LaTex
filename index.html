@@ -51,8 +51,11 @@
       });
 
       output.textContent = result;
-      rendered.innerHTML = `\\(${result}\\)`;
-      MathJax.typeset();
+      const wrapped = inlineToggle.checked
+      ? `\\(${result}\\)`
+      : `\\[${result}\\]`;
+      rendered.innerHTML = wrapped;
+      MathJax.typesetPromise().catch(err => console.error("MathJax error:", err));
     };
   </script>
 </body>
