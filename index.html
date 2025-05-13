@@ -119,7 +119,8 @@
             .replace(/⁷/g, '^7')
             .replace(/⁸/g, '^8')
             .replace(/⁹/g, '^9')
-            .replace(/ᵀ/g, '^T');
+            .replace(/ᵀ/g, '^T')
+            .replace(/`\\sqcup'/g, '\\verb|\\sqcup|');
         }
         let latex = await pandoc.run({
           text: markdown,
