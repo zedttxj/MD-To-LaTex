@@ -2,51 +2,79 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>GitHub README.md to LaTeX Converter</title>
+  <title>GitHub Markdown to LaTeX Converter</title>
   <style>
-    body { font-family: sans-serif; padding: 20px; }
-    pre { background: #f0f0f0; padding: 10px; white-space: pre-wrap; }
+    body { font-family: sans-serif; padding: 20px; max-width: 800px; margin: auto; }
+    input[type="text"] { width: 100%; padding: 8px; margin: 10px 0; font-family: monospace; }
+    pre { background: #f0f0f0; padding: 10px; white-space: pre-wrap; border-radius: 5px; }
+    button { padding: 6px 12px; margin-right: 10px; }
   </style>
 </head>
 <body>
-  <h1>Convert Remote Markdown to LaTeX</h1>
-  <button id="convertBtn">Convert README.md to LaTeX</button>
+  <h1>GitHub Markdown to LaTeX Converter</h1>
+
+  <label for="urlInput"><strong>Enter Raw GitHub Markdown URL:</strong></label>
+  <input type="text" id="urlInput" value="https://raw.githubusercontent.com/zedttxj/Image-Processing-Tool-with-Matlab/main/optional/README.md" />
+
+  <button id="convertBtn">Convert to LaTeX</button>
+  <button id="downloadBtn" disabled>Download .tex</button>
 
   <h2>LaTeX Output</h2>
-  <pre id="latexOutput">Waiting...</pre>
+  <pre id="latexOutput">Waiting for input...</pre>
 
   <script type="module">
     import { Pandoc } from "https://cdn.jsdelivr.net/npm/pandoc-wasm@0.0.2/+esm";
 
-    const btn = document.getElementById("convertBtn");
+    const convertBtn = document.getElementById("convertBtn");
+    const downloadBtn = document.getElementById("downloadBtn");
     const output = document.getElementById("latexOutput");
+    const urlInput = document.getElementById("urlInput");
 
     const pandoc = new Pandoc();
-    output.textContent = "Downloading pandoc-wasm...";
+    output.textContent = "Initializing pandoc-wasm...";
     await pandoc.init();
-    output.textContent = "Ready. Click to convert.";
+    output.textContent = "Ready. Enter URL and click convert.";
 
-    btn.onclick = async () => {
-      output.textContent = "Fetching README.md...";
+    let currentLatex = "";
 
-      const url = "https://raw.githubusercontent.com/zedttxj/Image-Processing-Tool-with-Matlab/main/optional/README.md";
+    convertBtn.onclick = async () => {
+      const url = urlInput.value.trim();
+      if (!url.startsWith("https://")) {
+        output.textContent = "Please enter a valid HTTPS URL.";
+        return;
+      }
+
+      output.textContent = "Fetching Markdown file...";
+      downloadBtn.disabled = true;
 
       try {
         const response = await fetch(url);
+        if (!response.ok) throw new Error("Failed to fetch: " + response.statusText);
         const markdown = await response.text();
 
         output.textContent = "Converting to LaTeX...";
-
         const latex = await pandoc.run({
           text: markdown,
           options: { from: "markdown", to: "latex" }
         });
 
+        currentLatex = latex;
         output.textContent = latex;
+        downloadBtn.disabled = false;
       } catch (err) {
         output.textContent = "Error: " + err.message;
         console.error(err);
       }
+    };
+
+    downloadBtn.onclick = () => {
+      const blob = new Blob([currentLatex], { type: "text/x-tex" });
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = "converted_readme.tex";
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
     };
   </script>
 </body>
