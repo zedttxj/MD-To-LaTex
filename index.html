@@ -2,55 +2,51 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Markdown to LaTeX (pandoc-wasm)</title>
+  <title>GitHub README.md to LaTeX Converter</title>
   <style>
-    textarea { width: 100%; height: 200px; }
-    pre, #renderedLatex { background: #f0f0f0; padding: 10px; white-space: pre-wrap; }
+    body { font-family: sans-serif; padding: 20px; }
+    pre { background: #f0f0f0; padding: 10px; white-space: pre-wrap; }
   </style>
-  <!-- MathJax for rendering LaTeX -->
-  <script>
-    window.MathJax = {
-      tex: { inlineMath: [['$', '$'], ['\\(', '\\)']] },
-      svg: { fontCache: 'global' }
-    };
-  </script>
-  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" async></script>
 </head>
 <body>
-  <h1>Markdown to LaTeX Converter</h1>
-  <textarea id="mdInput"># Hello World\nThis is **bold** text and some math: $x^2 + y^2 = z^2$</textarea>
-  <button id="convertBtn">Convert</button>
+  <h1>Convert Remote Markdown to LaTeX</h1>
+  <button id="convertBtn">Convert README.md to LaTeX</button>
 
   <h2>LaTeX Output</h2>
-  <pre id="latexOutput">Initializing...</pre>
-
-  <h2>Rendered Output</h2>
-  <div id="renderedLatex">Waiting...</div>
+  <pre id="latexOutput">Waiting...</pre>
 
   <script type="module">
     import { Pandoc } from "https://cdn.jsdelivr.net/npm/pandoc-wasm@0.0.2/+esm";
 
-    const textarea = document.getElementById("mdInput");
     const btn = document.getElementById("convertBtn");
     const output = document.getElementById("latexOutput");
 
     const pandoc = new Pandoc();
-    output.textContent = "Downloading wasm...";
+    output.textContent = "Downloading pandoc-wasm...";
     await pandoc.init();
-    output.textContent = "Ready.";
+    output.textContent = "Ready. Click to convert.";
 
     btn.onclick = async () => {
-      output.textContent = "Converting...";
+      output.textContent = "Fetching README.md...";
 
-      const md = textarea.value;
-      const result = await pandoc.run({
-        text: md,
-        options: { from: "markdown", to: "latex" }
-      });
+      const url = "https://raw.githubusercontent.com/zedttxj/Image-Processing-Tool-with-Matlab/main/optional/README.md";
 
-      output.textContent = result;
-      document.getElementById("renderedLatex").innerHTML = `\\(${result}\\)`;
-      MathJax.typeset();
+      try {
+        const response = await fetch(url);
+        const markdown = await response.text();
+
+        output.textContent = "Converting to LaTeX...";
+
+        const latex = await pandoc.run({
+          text: markdown,
+          options: { from: "markdown", to: "latex" }
+        });
+
+        output.textContent = latex;
+      } catch (err) {
+        output.textContent = "Error: " + err.message;
+        console.error(err);
+      }
     };
   </script>
 </body>
