@@ -22,6 +22,7 @@
 
   <h2>LaTeX Output</h2>
   <pre id="latexOutput">Waiting...</pre>
+  <pre id="status_image"></pre>
 
   <h3>📸 Manual Image Download Links</h3>
   <ul id="imageLinks"></ul>
@@ -32,6 +33,7 @@
     const urlInput = document.getElementById("urlInput");
     const convertBtn = document.getElementById("convertBtn");
     const output = document.getElementById("latexOutput");
+    const statusimage = document.getElementById("status_image");
     const imageLinksList = document.getElementById("imageLinks");
 
     const pandoc = new Pandoc();
@@ -67,47 +69,58 @@
       if (match) return match[1];
       throw new Error("Could not resolve asset redirect from: " + link);
     }
-
+    function escapeRegExp(string) {
+      return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    }
     convertBtn.onclick = async () => {
       const url = urlInput.value.trim();
       if (!url.startsWith("https://")) {
         output.textContent = "❌ Invalid URL.";
         return;
       }
-
+    
       imageLinksList.innerHTML = "";
-
+    
       try {
         output.textContent = "📥 Fetching Markdown...";
         const mdResponse = await fetch(url);
         if (!mdResponse.ok) throw new Error("Failed to fetch markdown.");
         const markdown = await mdResponse.text();
-
+    
         output.textContent = "🔄 Converting to LaTeX...";
-        const latex = await pandoc.run({
+        let latex = await pandoc.run({
           text: markdown,
           options: { from: "markdown", to: "latex" }
         });
-        output.textContent = latex;
-
+    
         const imageUrls = extractImageLinks(markdown, url);
+    
         if (imageUrls.length > 0) {
-          output.textContent += `\n📸 Found ${imageUrls.length} image(s). Listed below.`;
+          output.textContent += `\n📸 Found ${imageUrls.length} image(s). Replacing LaTeX links...`;
+    
           imageUrls.forEach((link, index) => {
+            const filename = `images/figure${index + 1}` + link.split("/").pop().split(".").pop().replace(/[^a-zA-Z0-9]/g, "") || ".png";
+            const regex = new RegExp(`\\\\includegraphics\\{${escapeRegExp(link)}\\}`, "g");
+            latex = latex.replace(regex, `\\includegraphics{${filename}}`);
+    
+            // Add to UI list
             const li = document.createElement("li");
             const a = document.createElement("a");
             a.href = link;
-            a.textContent = `Image ${index + 1}: ${link}`;
+            a.textContent = `${filename} ← ${link}`;
             a.target = "_blank";
             li.appendChild(a);
             imageLinksList.appendChild(li);
           });
+    
         } else {
-          output.textContent += "\n✅ No image links found.";
+          statusimage.textContent = "\n✅ No image links found.";
         }
-
+    
+        output.textContent = latex;
+    
       } catch (err) {
-        output.textContent = "❌ Error: " + err.message;
+        statusimage.textContent = "❌ Error: " + err.message;
         console.error(err);
       }
     };
