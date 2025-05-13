@@ -22,7 +22,8 @@
 
   <h2>LaTeX Output</h2>
   <pre id="latexOutput">Waiting...</pre>
-
+  <h3>📸 Manual Image Download Links</h3>
+  <ul id="imageLinks"></ul>
   <script type="module">
     import { Pandoc } from "https://cdn.jsdelivr.net/npm/pandoc-wasm@0.0.2/+esm";
 
@@ -98,26 +99,19 @@
 
         if (imageUrls.length > 0) {
           output.textContent += `\n📸 Downloading ${imageUrls.length} image(s)...`;
-          const imgFolder = zip.folder("images");
-
-          for (const link of imageUrls) {
-            try {
-              let actualUrl = link;
-              // If it's a GitHub attachment page, extract real image
-              if (link.includes("github.com/user-attachments/")) {
-                output.textContent += `\n🔍 Resolving GitHub asset: ${link}`;
-                actualUrl = await resolveGitHubAttachment(link);
-              }
+          const imageList = document.getElementById("imageLinks");
+          imageList.innerHTML = ""; // Clear previous list
           
-              const blob = await fetchImageAsBlob(actualUrl);
-              const filename = actualUrl.split("/").pop().split("?")[0];
-              imgFolder.file(filename, blob);
-              console.log(`✓ Added: ${filename}`);
-            } catch (err) {
-              console.warn(`✗ Failed to fetch image: ${link}`, err);
-              output.textContent += `\n❌ Could not fetch: ${link}`;
-            }
-          }
+          imageUrls.forEach((imgUrl, i) => {
+            const li = document.createElement("li");
+            const a = document.createElement("a");
+            a.href = imgUrl;
+            a.textContent = `Image ${i + 1}`;
+            a.target = "_blank";
+            a.download = ""; // browser may prompt download if it's an image
+            li.appendChild(a);
+            imageList.appendChild(li);
+          });
 
         }
 
