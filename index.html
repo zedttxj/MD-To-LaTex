@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Markdown to LaTeX Converter</title>
+  <style>
+    body { font-family: sans-serif; padding: 20px; }
+    textarea { width: 100%; height: 200px; margin-bottom: 10px; }
+    pre { background: #f4f4f4; padding: 10px; white-space: pre-wrap; }
+  </style>
+</head>
+<body>
+  <h1>Markdown to LaTeX Converter</h1>
+  <textarea id="mdInput" placeholder="Enter Markdown here..."></textarea>
+  <button onclick="convertMarkdown()">Convert to LaTeX</button>
+  <h2>LaTeX Output:</h2>
+  <pre id="latexOutput"></pre>
+
+  <script>
+    function escapeLatex(str) {
+      return str.replace(/([{}_$%&#^\\])/g, '\\$1');
+    }
+
+    function convertMarkdown() {
+      const md = document.getElementById("mdInput").value;
+
+      let latex = md
+        .replace(/^# (.*$)/gim, '\\section{$1}')
+        .replace(/^## (.*$)/gim, '\\subsection{$1}')
+        .replace(/^### (.*$)/gim, '\\subsubsection{$1}')
+        .replace(/\*\*(.*?)\*\*/gim, '\\textbf{$1}')
+        .replace(/\*(.*?)\*/gim, '\\textit{$1}')
+        .replace(/`([^`]+)`/g, '\\texttt{$1}')
+        .replace(/\[(.*?)\]\((.*?)\)/gim, '\\href{$2}{$1}')
+        .replace(/^\s*-\s(.*$)/gim, '\\item $1')
+        .replace(/\n/g, '\n\n');
+
+      // Wrap items in itemize environment if any
+      if (latex.includes('\\item')) {
+        latex = latex.replace(/(\\item[^\n]*)/g, '\t$1');
+        latex = '\\begin{itemize}\n' + latex + '\n\\end{itemize}';
+      }
+
+      document.getElementById("latexOutput").textContent = latex.trim();
+    }
+  </script>
+</body>
+</html>
