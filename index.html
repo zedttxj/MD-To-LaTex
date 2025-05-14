@@ -76,6 +76,11 @@
     function tropicalToLatex(unicodeStr) {
       return unicodeStr
         .replace(/[₍₎μ𝜈νλ𝐴₀-₉⁰-⁹′⊙⨂⊕⊔∈≠+×*/^=_|]+/g, match => `$${match}$`)
+        .replace(/\{.*?\$+.*?\}/g, (match) => {
+          const inner = match.slice(1, -1).replace(/\$/g, '');  // remove outer braces and all $
+          return `{\$${inner}\$}`;  // wrap with exactly one pair of $
+        })
+        .replace(/\$.{1}\$/g, (_, char) => char)
         .replace(/μ/g, '\\mu')
         .replace(/𝜈/g, '\\nu')
         .replace(/ν/g, '\\nu')
@@ -114,12 +119,7 @@
         .replace(/\\_\\\{.*?\\\}/g, match => {
           const inner = match.slice(4, -2);
           return `_{${inner}}`;
-        })
-        .replace(/\{.*?\$+.*?\}/g, (match) => {
-          const inner = match.slice(1, -1).replace(/\$/g, '');  // remove outer braces and all $
-          return `{\$${inner}\$}`;  // wrap with exactly one pair of $
-        })
-        .replace(/\$.{1}\$/g, (_, char) => char);
+        });
     }
     convertBtn.onclick = async () => {
       const url = urlInput.value.trim();
