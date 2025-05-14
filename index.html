@@ -89,7 +89,7 @@
         // .replace(/\$\\\{\$/g, '\\\{')
         // .replace(/\\\}/g,'\}')
         .replace(/\$.*?[a-zA-z]{4}.*?\$/g, (match) => {
-          const inner = match.slice(1, -1);
+          const inner = match.replace(/\$/g, '');
           return `${inner}`;
         })
         .replace(/μ/g, '\\mu ')
