@@ -76,14 +76,14 @@
     function tropicalToLatex(unicodeStr) {
       return unicodeStr
         .replace(/[₍₎μ𝜈νλƒ𝐴₀-₉⁰-⁹′⊙⨂⊕⊔∈≠+×*/^=_|]+/g, match => `$${match}$`)
-        .replace(/[⁰¹²³⁴⁵⁶⁷⁸⁹]+/g, match => `^{${match}}`)
-        .replace(/[₀₁₂₃₄₅₆₇₈₉₍₎]{1}[₀₁₂₃₄₅₆₇₈₉₍,₎^\s]*/g, match => `_{${match}}`)
-        .replace(/\$\\\{\$/g, '\\\{')
-        .replace(/\\\}/g,'\}')
         .replace(/\{.*?\$+.*?\}/g, (match) => {
           const inner = match.slice(1, -1).replace(/\$/g, '');  // remove outer braces and all $
           return `{\$${inner}\$}`;  // wrap with exactly one pair of $
         })
+        .replace(/[⁰¹²³⁴⁵⁶⁷⁸⁹]+/g, match => `^{${match}}`)
+        .replace(/[₀₁₂₃₄₅₆₇₈₉₍₎]{1}[₀₁₂₃₄₅₆₇₈₉₍,₎^\s]*/g, match => `_{${match}}`)
+        .replace(/\$\\\{\$/g, '\\\{')
+        .replace(/\\\}/g,'\}')
         .replace(/\$.*?[a-zA-z]{4}.*?\$/g, (match) => {
           const inner = match.slice(1, -1);
           return `${inner}`;
