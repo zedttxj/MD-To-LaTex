@@ -119,7 +119,7 @@
               if (code >= 0x1D482 && code <= 0x1D49B) return String.fromCharCode(code - 0x1D482 + 0x61);
           
               return char; // fallback: leave as-is
-            });
+            })
             .replace(/[₀₁₂₃₄₅₆₇₈₉]+/g, match => `_{${match}}`)
             .replace(/₀/g, '0')
             .replace(/₁/g, '1')
