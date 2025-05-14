@@ -92,7 +92,7 @@
         
         function tropicalToLatex(unicodeStr) {
           return unicodeStr
-            .replace(/[μ𝜈νλ𝐴₀-₉⁰-⁹′⊙⨂⊕⊔∈≠+\-×*/^=().{}[\]_\\]+/g, match => `$${match}$`)
+            .replace(/[μ𝜈νλ𝐴₀-₉⁰-⁹′⊙⨂⊕⊔∈≠+\-×*/^=(){}[\]_\]+/g, match => `$${match}$`)
             .replace(/μ/g, '\\mu')
             .replace(/𝜈/g, '\\nu')
             .replace(/ν/g, '\\nu')
