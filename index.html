@@ -97,7 +97,29 @@
             .replace(/𝜈/g, '\\nu')
             .replace(/ν/g, '\\nu')
             .replace(/λ/g, '\\lambda')
-            .replace(/𝐴–𝑍/g, match => `$${match}$`)
+            .replace(/[\u{1D400}-\u{1D7FF}]/gu, char => {
+              const code = char.codePointAt(0);
+              
+              // Bold A-Z: 𝐀 (U+1D400) to 𝐙 (U+1D419)
+              if (code >= 0x1D400 && code <= 0x1D419) return String.fromCharCode(code - 0x1D400 + 0x41);
+          
+              // Bold a-z: 𝐚 (U+1D41A) to 𝐳 (U+1D433)
+              if (code >= 0x1D41A && code <= 0x1D433) return String.fromCharCode(code - 0x1D41A + 0x61);
+          
+              // Italic A-Z: 𝐴 (U+1D434) to 𝑍 (U+1D44D)
+              if (code >= 0x1D434 && code <= 0x1D44D) return String.fromCharCode(code - 0x1D434 + 0x41);
+          
+              // Italic a-z: 𝑎 (U+1D44E) to 𝑧 (U+1D467)
+              if (code >= 0x1D44E && code <= 0x1D467) return String.fromCharCode(code - 0x1D44E + 0x61);
+          
+              // Bold italic A-Z: 𝑨 (U+1D468) to 𝑻 (U+1D481)
+              if (code >= 0x1D468 && code <= 0x1D481) return String.fromCharCode(code - 0x1D468 + 0x41);
+          
+              // Bold italic a-z: 𝒂 (U+1D482) to 𝒛 (U+1D49B)
+              if (code >= 0x1D482 && code <= 0x1D49B) return String.fromCharCode(code - 0x1D482 + 0x61);
+          
+              return char; // fallback: leave as-is
+            });
             .replace(/[₀₁₂₃₄₅₆₇₈₉]+/g, match => `_{${match}}`)
             .replace(/₀/g, '0')
             .replace(/₁/g, '1')
