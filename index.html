@@ -84,10 +84,6 @@
           const inner = match.slice(1, -1);
           return `${inner}`;
         })
-        .replace(/\\_\\{([^\}]*)\}/g, match => {
-            const inner = match.slice(4, -3);
-            return `_{${inner}}$`;
-        })
         .replace(/μ/g, '\\mu ')
         .replace(/𝜈/g, '\\nu ')
         .replace(/ν/g, '\\nu ')
@@ -129,6 +125,10 @@
         .replace(/\$.{1}\$/g, match => {
           const inner = match.slice(1, -1);
           return inner;
+        })
+        .replace(/\\_\\{[^}]\}/g, match => {
+            const inner = match.slice(4, -2);
+            return `_{${inner}}`;
         });
     }
     convertBtn.onclick = async () => {
