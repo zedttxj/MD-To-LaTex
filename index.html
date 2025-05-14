@@ -73,6 +73,45 @@
     function escapeRegExp(string) {
       return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     }
+    function tropicalToLatex(unicodeStr) {
+      return unicodeStr
+        .replace(/[₍,₎μ𝜈νλ𝐴₀-₉⁰-⁹′⊙⨂⊕⊔∈≠+\-×*/^=()[\]_|]+/g, match => `$${match}$`)
+        .replace(/μ/g, '\\mu')
+        .replace(/𝜈/g, '\\nu')
+        .replace(/ν/g, '\\nu')
+        .replace(/λ/g, '\\lambda')
+        .replace(/𝐴/g, '$A$')
+        .replace(/[₀₁₂₃₄₅₆₇₈₉₍,₎]+/g, match => `_{${match}}`)
+        .replace(/₀/g, '0')
+        .replace(/₁/g, '1')
+        .replace(/₂/g, '2')
+        .replace(/₃/g, '3')
+        .replace(/₄/g, '4')
+        .replace(/₅/g, '5')
+        .replace(/₆/g, '6')
+        .replace(/₇/g, '7')
+        .replace(/₈/g, '8')
+        .replace(/₉/g, '9')
+        .replace(/′/g, '^\\prime ')
+        .replace(/⊙/g, '\\odot ')
+        .replace(/⨂/g, '\\otimes ')
+        .replace(/⊕/g, '\\oplus ')
+        .replace(/⊔/g, '\\sqcup ')
+        .replace(/∈/g, '\\in ')
+        .replace(/≠/g, '\\neq ')
+        .replace(/[⁰¹²³⁴⁵⁶⁷⁸⁹]+/g, match => `^{${match}}`)
+        .replace(/⁰/g, '0')
+        .replace(/¹/g, '1')
+        .replace(/²/g, '2')
+        .replace(/³/g, '3')
+        .replace(/⁴/g, '4')
+        .replace(/⁵/g, '5')
+        .replace(/⁶/g, '6')
+        .replace(/⁷/g, '7')
+        .replace(/⁸/g, '8')
+        .replace(/⁹/g, '9')
+        .replace(/ᵀ/g, 'T');
+    }
     convertBtn.onclick = async () => {
       const url = urlInput.value.trim();
       if (!url.startsWith("https://")) {
@@ -89,7 +128,6 @@
         const markdown = await mdResponse.text();
     
         output.textContent = "🔄 Converting to LaTeX...";
-        
         
         let latex = await pandoc.run({
           text: markdown,
