@@ -77,7 +77,7 @@
       return unicodeStr
         .replace(/\\_\\{[^}]*\}/g, match => {
             const inner = match.slice(4, -2);
-            return `_{${inner}}`;
+            return `_{${inner}}$`;
         })
         .replace(/[₍₎μ𝜈νλƒ𝐴₀-₉⁰-⁹′⊙⨂⊕⊔∈≠+×*/^=_|]+/g, match => `$${match}$`)
         .replace(/\{.*?\$+.*?\}/g, (match) => {
@@ -90,7 +90,7 @@
         // .replace(/\\\}/g,'\}')
         .replace(/\$.*?[a-zA-z]{4}.*?\$/g, (match) => {
           const inner = match.replace(/\$/g, '');
-          return `${inner}`;
+          return inner;
         })
         .replace(/μ/g, '\\mu ')
         .replace(/𝜈/g, '\\nu ')
