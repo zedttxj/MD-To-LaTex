@@ -84,6 +84,10 @@
           const inner = match.slice(1, -1);
           return `${inner}`;
         })
+        .replace(/\\_\\\{.*?\\\}/g, match => {
+          const inner = match.slice(4, -2);
+          return `_{${inner}}$`;
+        })
         .replace(/μ/g, '\\mu')
         .replace(/𝜈/g, '\\nu')
         .replace(/ν/g, '\\nu')
@@ -121,11 +125,10 @@
         .replace(/⁸/g, '8')
         .replace(/⁹/g, '9')
         .replace(/ᵀ/g, 'T')
-        .replace(/\\_\\\{.*?\\\}/g, match => {
-          const inner = match.slice(4, -2);
-          return `_{${inner}}$`;
-        })
-        .replace(/\$.{1}\$/g, (_, char) => char);
+        .replace(/\$.{1}\$/g, match => {
+          const inner = match.slice(1, -1);
+          return inner;
+        });
     }
     convertBtn.onclick = async () => {
       const url = urlInput.value.trim();
