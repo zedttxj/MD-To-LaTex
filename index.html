@@ -80,7 +80,7 @@
         .replace(/𝜈/g, '\\nu')
         .replace(/ν/g, '\\nu')
         .replace(/λ/g, '\\lambda')
-        .replace(/𝐴/g, '$A$')
+        .replace(/𝐴/g, 'A')
         .replace(/[₀₁₂₃₄₅₆₇₈₉₍,₎]+/g, match => `_{${match}}`)
         .replace(/₀/g, '0')
         .replace(/₁/g, '1')
@@ -114,6 +114,10 @@
         .replace(/\\_\\\{.*?\\\}/g, match => {
           const inner = match.slice(4, -2);
           return `_{${inner}}`;
+        })
+        .replace(/\{.*?\$+.*?\}/g, (match) => {
+          const inner = match.slice(1, -1).replace(/\$/g, '');  // remove outer braces and all $
+          return `{\$${inner}\$}`;  // wrap with exactly one pair of $
         })
         .replace(/\$.{1}\$/g, m => `[${m}]`);
     }
