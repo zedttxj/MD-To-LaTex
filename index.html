@@ -85,8 +85,8 @@
           return `${inner}`;
         })
         .replace(/\\_\\{.*?\}/g, match => {
-            const inner = match.slice(4, -2);
-            return `_{${inner}}`;
+            const inner = match.slice(4, -3);
+            return `_{${inner}}$`;
         })
         .replace(/μ/g, '\\mu ')
         .replace(/𝜈/g, '\\nu ')
