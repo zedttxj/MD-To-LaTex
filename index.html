@@ -85,13 +85,13 @@
           return `${inner}`;
         })
         .replace(/\\_\\\{.*?\\\}/g, match => {
-          const inner = match.slice(4, -2);
+          const inner = match.slice(4, -3);
           return `_{${inner}}$`;
         })
-        .replace(/μ/g, '\\mu')
-        .replace(/𝜈/g, '\\nu')
-        .replace(/ν/g, '\\nu')
-        .replace(/λ/g, '\\lambda')
+        .replace(/μ/g, '\\mu ')
+        .replace(/𝜈/g, '\\nu ')
+        .replace(/ν/g, '\\nu ')
+        .replace(/λ/g, '\\lambda ')
         .replace(/𝐴/g, 'A')
         .replace(/[₀₁₂₃₄₅₆₇₈₉₍₎]+/g, match => `_{${match}}`)
         .replace(/₀/g, '0')
