@@ -133,6 +133,7 @@
           text: markdown,
           options: { from: "markdown", to: "latex" }
         });
+        latex = tropicalToLatex(latex);
         const imageUrls = extractImageLinks(markdown, url);
     
         if (imageUrls.length > 0) {
@@ -157,7 +158,6 @@
           statusimage.textContent = "\n✅ No image links found.";
         }
         
-        latex = tropicalToLatex(latex);
         output.textContent = latex;
         downloadTexBtn.onclick = () => {
           const blob = new Blob([output.textContent], { type: "text/x-tex" });
