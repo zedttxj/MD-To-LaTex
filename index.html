@@ -80,6 +80,8 @@
           const inner = match.slice(1, -1).replace(/\$/g, '');  // remove outer braces and all $
           return `{\$${inner}\$}`;  // wrap with exactly one pair of $
         })
+        .replace(/[₀₁₂₃₄₅₆₇₈₉₍₎]+/g, match => `_{${match}}`)
+        .replace(/\$\\\{\$/g, '\\\{')
         .replace(/\$.*?[a-zA-z]{4}.*?\$/g, (match) => {
           const inner = match.slice(1, -1);
           return `${inner}`;
@@ -89,8 +91,6 @@
         .replace(/ν/g, '\\nu ')
         .replace(/λ/g, '\\lambda ')
         .replace(/𝐴/g, 'A')
-        .replace(/[₀₁₂₃₄₅₆₇₈₉₍₎]+/g, match => `_{${match}}`)
-        .replace(/\$\\\{\$/g, '\\\{')
         .replace(/₀/g, '0')
         .replace(/₁/g, '1')
         .replace(/₂/g, '2')
