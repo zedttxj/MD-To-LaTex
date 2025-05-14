@@ -75,13 +75,13 @@
     }
     function tropicalToLatex(unicodeStr) {
       return unicodeStr
-        .replace(/[₍,₎μ𝜈νλ𝐴₀-₉⁰-⁹′⊙⨂⊕⊔∈≠+\-×*/^=()[\]_|]+/g, match => `$${match}$`)
+        .replace(/[₍₎μ𝜈νλ𝐴₀-₉⁰-⁹′⊙⨂⊕⊔∈≠+\-×*/^=()[\]_|]+/g, match => `$${match}$`)
         .replace(/μ/g, '\\mu')
         .replace(/𝜈/g, '\\nu')
         .replace(/ν/g, '\\nu')
         .replace(/λ/g, '\\lambda')
         .replace(/𝐴/g, 'A')
-        .replace(/[₀₁₂₃₄₅₆₇₈₉₍,₎]+/g, match => `_{${match}}`)
+        .replace(/[₀₁₂₃₄₅₆₇₈₉₍₎]+/g, match => `_{${match}}`)
         .replace(/₀/g, '0')
         .replace(/₁/g, '1')
         .replace(/₂/g, '2')
