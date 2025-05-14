@@ -126,7 +126,7 @@
           const inner = match.slice(1, -1);
           return inner;
         })
-        .replace(/\\_\\{[^}]\}/g, match => {
+        .replace(/\\_\\{[^}]*\}/g, match => {
             const inner = match.slice(4, -2);
             return `_{${inner}}`;
         });
