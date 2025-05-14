@@ -119,7 +119,7 @@
           const inner = match.slice(1, -1).replace(/\$/g, '');  // remove outer braces and all $
           return `{\$${inner}\$}`;  // wrap with exactly one pair of $
         })
-        .replace(/\$.{1}\$/g, m => `[${m}]`);
+        .replace(/\$.{1}\$/g, m => `${m}`);
     }
     convertBtn.onclick = async () => {
       const url = urlInput.value.trim();
