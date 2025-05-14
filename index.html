@@ -111,6 +111,10 @@
         .replace(/⁸/g, '8')
         .replace(/⁹/g, '9')
         .replace(/ᵀ/g, 'T')
+        .replace(/\\_\\\{.*?\\\}/g, match => {
+          const inner = match.slice(4, -2);
+          return `_{${inner}}`;
+        })
         .replace(/\$.{1}\$/g, m => `[${m}]`);
     }
     convertBtn.onclick = async () => {
