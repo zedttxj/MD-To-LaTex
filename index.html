@@ -75,6 +75,10 @@
     }
     function tropicalToLatex(unicodeStr) {
       return unicodeStr
+        .replace(/\\textbf\{[\s₍₎μ𝜈νλƒ𝐴₀-₉⁰-⁹′⊙⨂⊕⊔∈≠+×*/^=_|]+\}/g, (match) => {
+          const inner = match.slice(7);  // remove outer braces and all $
+          return `$\\boldsymbol${inner}$`;  // wrap with exactly one pair of $
+        })
         .replace(/\\_\\{[^}]*\\\}+/g, match => {
             const inner = match.slice(4).replace(/\\\}/g, '');
             return `_{${inner}}`;
