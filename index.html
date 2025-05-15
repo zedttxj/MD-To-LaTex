@@ -162,7 +162,7 @@
         .replace(/⁸/g, '8')
         .replace(/⁹/g, '9')
         .replace(/ᵀ/g, 'T')
-        .replace(/\$[^+]{1}\$/g, match => {
+        .replace(/\$[^\+^\-]{1}\$/g, match => {
           const inner = match.slice(1, -1);
           return inner;
         })
