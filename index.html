@@ -82,7 +82,7 @@
             return `_{${inner}}`;
         })
         .replace(/[₍₎μ𝜈νλƒ𝐴₀-₉⁰-⁹′⊙⨂⊕⊔∈≠+×*/^=_|]+/g, match => `$${match}$`)
-        .replace(/\{.*?\$+.*\}/g, (match) => {
+        .replace(/\{.*\$+.*\}/g, (match) => {
           const inner = match.slice(1, -1).replace(/\$/g, '');  // remove outer braces and all $
           return `{\$${inner}\$}`;  // wrap with exactly one pair of $
         })
