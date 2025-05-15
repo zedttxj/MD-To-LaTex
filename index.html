@@ -20,6 +20,7 @@
 
   <button id="convertBtn">Convert</button>
   <button id="downloadTexBtn">Download .tex</button>
+  <button id="downloadZipBtn">📦 Download LaTeX + Images ZIP</button>
 
   <h2>LaTeX Output</h2>
   <pre id="latexOutput">Waiting...</pre>
@@ -27,7 +28,7 @@
 
   <h3>📸 Manual Image Download Links</h3>
   <ul id="imageLinks"></ul>
-
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
   <script type="module">
     import { Pandoc } from "https://cdn.jsdelivr.net/npm/pandoc-wasm@0.0.2/+esm";
 
@@ -36,6 +37,7 @@
     const output = document.getElementById("latexOutput");
     const statusimage = document.getElementById("status_image");
     const imageLinksList = document.getElementById("imageLinks");
+    const downloadZipBtn = document.getElementById("downloadZipBtn");
 
     const pandoc = new Pandoc();
     output.textContent = "Initializing pandoc-wasm...";
@@ -159,7 +161,12 @@
           options: { from: "markdown", to: "latex" }
         });
         const imageUrls = extractImageLinks(markdown, url);
-    
+
+        const zip = new JSZip();
+        const imagesFolder = zip.folder("images");
+        const corsProxy = "https://cors-proxy-xre8.onrender.com/proxy?url=";
+        const imageFetches = [];
+  
         if (imageUrls.length > 0) {
           output.textContent += `\n📸 Found ${imageUrls.length} image(s). Replacing LaTeX links...`;
     
@@ -176,7 +183,36 @@
             a.target = "_blank";
             li.appendChild(a);
             imageLinksList.appendChild(li);
+
+            const proxiedUrl = `${corsProxy}${encodeURIComponent(link)}`;
+            const fetchAndAdd = fetch(proxiedUrl)
+              .then(response => {
+                if (!response.ok) throw new Error(`Failed to fetch ${link}`);
+                return response.blob();
+              })
+              .then(blob => blob.arrayBuffer())
+              .then(buffer => {
+                imagesFolder.file(filename, buffer);
+              })
+              .catch(err => {
+                console.error("Error fetching image:", link, err);
+              });
+          
+            imageFetches.push(fetchAndAdd);
           });
+          await Promise.all(imageFetches); // Wait for all images to be fetched
+
+          // Add the LaTeX file after image fetching is complete
+          zip.file("document.tex", latex);
+          
+          // Enable ZIP download
+          downloadZipBtn.onclick = async () => {
+            const zipBlob = await zip.generateAsync({ type: "blob" });
+            const link = document.createElement("a");
+            link.href = URL.createObjectURL(zipBlob);
+            link.download = "latex_with_images.zip";
+            link.click();
+          };
     
         } else {
           statusimage.textContent = "\n✅ No image links found.";
