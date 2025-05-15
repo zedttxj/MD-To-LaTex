@@ -81,8 +81,8 @@
             const inner = match.slice(4).replace(/\\\}/g, '');
             return `_{${inner}}`;
         })
-        .replace(/[₍₎μ𝜈νλƒ𝐴₀-₉⁰-⁹′⊙⨂⊕⊔∈≠+×*/^=_|]+/g, match => `$${match}$`)
-        .replace(/\{.*\$+.*\}/g, (match) => {
+        .replace(/[₍₎μ𝜈νλƒ𝐴-𝑍₀-₉⁰-⁹′⊙⨂⊕⊔∈≠+×*/^=_|]+/g, match => `$${match}$`)
+        .replace(/\{.*?\$+.*\}/g, (match) => {
           const inner = match.slice(1, -1).replace(/\$/g, '');  // remove outer braces and all $
           return `{\$${inner}\$}`;  // wrap with exactly one pair of $
         })
@@ -103,6 +103,31 @@
         .replace(/ν/g, '\\nu ')
         .replace(/λ/g, '\\lambda ')
         .replace(/𝐴/g, 'A')
+        .replace(/𝐵/g, 'B')
+        .replace(/𝐶/g, 'C')
+        .replace(/𝐷/g, 'D')
+        .replace(/𝐸/g, 'E')
+        .replace(/𝐹/g, 'F')
+        .replace(/𝐺/g, 'G')
+        .replace(/𝐻/g, 'H')
+        .replace(/𝐼/g, 'I')
+        .replace(/𝐽/g, 'J')
+        .replace(/𝐾/g, 'K')
+        .replace(/𝐿/g, 'L')
+        .replace(/𝑀/g, 'M')
+        .replace(/𝑁/g, 'N')
+        .replace(/𝑂/g, 'O')
+        .replace(/𝑃/g, 'P')
+        .replace(/𝑄/g, 'Q')
+        .replace(/𝑅/g, 'R')
+        .replace(/𝑆/g, 'S')
+        .replace(/𝑇/g, 'T')
+        .replace(/𝑈/g, 'U')
+        .replace(/𝑉/g, 'V')
+        .replace(/𝑊/g, 'W')
+        .replace(/𝑋/g, 'X')
+        .replace(/𝑌/g, 'Y')
+        .replace(/𝑍/g, 'Z')
         .replace(/₀/g, '0')
         .replace(/₁/g, '1')
         .replace(/₂/g, '2')
