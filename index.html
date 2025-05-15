@@ -160,10 +160,6 @@
     
           const pandoc = new Pandoc();
           await pandoc.init();
-          const sectionLatex = await pandoc.run({
-            text: section,
-            options: { from: "markdown", to: "latex" }
-          });
     
           // Accumulate image URLs from this section
           extractImageLinks(section, url).forEach(link => allImageUrls.add(link));
