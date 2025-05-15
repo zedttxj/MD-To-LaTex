@@ -171,30 +171,43 @@
   
         if (imageUrls.length > 0) {
           output.textContent += `\n📸 Found ${imageUrls.length} image(s). Replacing LaTeX links...`;
-    
+
           imageUrls.forEach((link, index) => {
-            const filename = `images/figure${index + 1}` || ".png";
-            const regex = new RegExp(`\\\\includegraphics\\{${escapeRegExp(link)}\\}`, "g");
-            latex = latex.replace(regex, `\\includegraphics{${filename}}`);
-    
-            // Add to UI list
-            const li = document.createElement("li");
-            const a = document.createElement("a");
-            a.href = link;
-            a.textContent = `${filename} ← ${link}`;
-            a.target = "_blank";
-            li.appendChild(a);
-            imageLinksList.appendChild(li);
 
             const proxiedUrl = `${corsProxy}${encodeURIComponent(link)}`;
             const fetchAndAdd = fetch(proxiedUrl)
               .then(response => {
                 if (!response.ok) throw new Error(`Failed to fetch ${link}`);
+                const contentType = response.headers.get("Content-Type"); // e.g., "image/jpeg"
+
+
+
+                
+                let ext = ".png";
+                if (contentType.includes("jpeg")) ext = ".jpg";
+                else if (contentType.includes("webp")) ext = ".webp";
+                
+                const filename = `images/figure${index + 1}${ext}`;
+                const regex = new RegExp(`\\\\includegraphics\\{${escapeRegExp(link)}\\}`, "g");
+                latex = latex.replace(regex, `\\includegraphics{${filename}}`);
+        
+                // Add to UI list
+                const li = document.createElement("li");
+                const a = document.createElement("a");
+                a.href = link;
+                a.textContent = `${filename} ← ${link}`;
+                a.target = "_blank";
+                li.appendChild(a);
+                imageLinksList.appendChild(li);
+
+
+
+                
                 return response.blob();
               })
               .then(blob => blob.arrayBuffer())
               .then(buffer => {
-                imagesFolder.file(`${filename.slice(7)}.png`, buffer);
+                imagesFolder.file(`${filename.slice(7)}`, buffer);
               })
               .catch(err => {
                 console.error("Error fetching image:", link, err);
