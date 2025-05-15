@@ -174,7 +174,7 @@
 
           imageUrls.forEach((link, index) => {
             let ext = ".png";
-            const filename = `images/figure${index + 1}`;
+            let filename = `images/figure${index + 1}`;
             const proxiedUrl = `${corsProxy}${encodeURIComponent(link)}`;
             const fetchAndAdd = fetch(proxiedUrl)
               .then(response => {
