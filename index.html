@@ -76,8 +76,8 @@
     function tropicalToLatex(unicodeStr) {
       return unicodeStr
         .replace(/\\_\\{[^}]*\\\}+/g, match => {
-            const inner = match.slice(4, -1).replace(/\\\}/g, '');
-            return `_{${inner}}}`;
+            const inner = match.slice(4, 0).replace(/\\\}/g, '');
+            return `_{${inner}}`;
         })
         .replace(/[₍₎μ𝜈νλƒ𝐴₀-₉⁰-⁹′⊙⨂⊕⊔∈≠+×*/^=_|]+/g, match => `$${match}$`)
         .replace(/\{.*?\$+.*?\}/g, (match) => {
