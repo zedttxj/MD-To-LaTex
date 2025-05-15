@@ -149,7 +149,7 @@
         const markdown = await mdResponse.text();
     
         output.textContent = "🔄 Splitting into sections...";
-        const sections = markdown.split(/\n(?=# )/g).map(s => s.trim()).filter(Boolean);
+        const sections = markdown.split(/\n(?=## )/g).map(s => s.trim()).filter(Boolean);
     
         let combinedLatex = '';
         const allImageUrls = new Set();
