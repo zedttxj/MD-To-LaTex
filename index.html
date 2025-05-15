@@ -88,10 +88,12 @@
         })
         .replace(/[⁰¹²³⁴⁵⁶⁷⁸⁹]+/g, match => `^{${match}}`)
         .replace(/[₀₁₂₃₄₅₆₇₈₉₍₎]{1}[₀₁₂₃₄₅₆₇₈₉₍,₎^\s]*/g, match => `_{${match}}`)
+        .replace(/\\textbar/g,'\\bar')
         .replace(/\$.*?[a-zA-z]{4}.*\$/g, (match) => {
           const inner = match.replace(/\$/g, '');
           return inner;
         })
+        .replace(/\\bar/g,'\\textbar')
         .replace(/\\textbf\{[\s₍₎()0-9,μ𝜈νλ𝑥𝑦ƒ𝐴𝐵𝐶𝐷𝐸𝐹𝐺𝐻𝐼𝐽𝐾𝐿𝑀𝑁𝑂𝑃𝑄𝑅𝑆𝑇𝑈𝑉𝑊𝑋𝑌𝑍₀-₉⁰-⁹′⊙⨂⊕⊔∈≠+×*/^=_|]+\}/g, (match) => {
           const inner = match.slice(7);
           return `$\\boldsymbol${inner}$`;
