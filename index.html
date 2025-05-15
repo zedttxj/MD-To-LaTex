@@ -164,7 +164,8 @@
         .replace(/\$.{1}\$/g, match => {
           const inner = match.slice(1, -1);
           return inner;
-        });
+        })
+        .replace(/\\\$/g,'\$\\');
     }
     convertBtn.onclick = async () => {
       const url = urlInput.value.trim();
