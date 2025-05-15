@@ -148,34 +148,23 @@
         if (!mdResponse.ok) throw new Error("Failed to fetch markdown.");
         const markdown = await mdResponse.text();
     
-        output.textContent = "🔄 Splitting into sections...";
-        const sections = markdown.split(/\n(?=## )/g).map(s => s.trim()).filter(Boolean);
+        output.textContent = "🔄 Converting to LaTeX...";
+        
+        let latex = await pandoc.run({
+          text: markdown,
+          options: { from: "markdown", to: "latex" }
+        });
+        const imageUrls = extractImageLinks(markdown, url);
     
-        let combinedLatex = '';
-        const allImageUrls = new Set();
+        if (imageUrls.length > 0) {
+          output.textContent += `\n📸 Found ${imageUrls.length} image(s). Replacing LaTeX links...`;
     
-        for (let i = 0; i < sections.length; i++) {
-          const section = sections[i];
-          output.textContent = `🔄 Converting section ${i + 1} of ${sections.length}...`;
-    
-          const pandoc = new Pandoc();
-          await pandoc.init();
-    
-          // Accumulate image URLs from this section
-          extractImageLinks(section, url).forEach(link => allImageUrls.add(link));
-    
-          combinedLatex += "\n\n" + sectionLatex;
-        }
-    
-        // Replace image links with figure filenames
-        if (allImageUrls.size > 0) {
-          output.textContent += `\n📸 Found ${allImageUrls.size} image(s). Replacing LaTeX links...`;
-          let index = 1;
-          for (const link of allImageUrls) {
-            const filename = `images/figure${index++}`;
+          imageUrls.forEach((link, index) => {
+            const filename = `images/figure${index + 1}` || ".png";
             const regex = new RegExp(`\\\\includegraphics\\{${escapeRegExp(link)}\\}`, "g");
-            combinedLatex = combinedLatex.replace(regex, `\\includegraphics{${filename}}`);
+            latex = latex.replace(regex, `\\includegraphics{${filename}}`);
     
+            // Add to UI list
             const li = document.createElement("li");
             const a = document.createElement("a");
             a.href = link;
@@ -183,15 +172,14 @@
             a.target = "_blank";
             li.appendChild(a);
             imageLinksList.appendChild(li);
-          }
+          });
+    
         } else {
           statusimage.textContent = "\n✅ No image links found.";
         }
-    
-        // Final transformation
-        combinedLatex = tropicalToLatex(combinedLatex);
-        output.textContent = combinedLatex;
-    
+        
+        latex = tropicalToLatex(latex);
+        output.textContent = latex;
         downloadTexBtn.onclick = () => {
           const blob = new Blob([output.textContent], { type: "text/x-tex" });
           const link = document.createElement("a");
