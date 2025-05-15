@@ -160,7 +160,9 @@
           text: markdown,
           options: { from: "markdown", to: "latex" }
         });
+        
         const imageUrls = extractImageLinks(markdown, url);
+        latex = tropicalToLatex(latex);
 
         const zip = new JSZip();
         const imagesFolder = zip.folder("images");
@@ -218,7 +220,6 @@
           statusimage.textContent = "\n✅ No image links found.";
         }
         
-        latex = tropicalToLatex(latex);
         output.textContent = latex;
         downloadTexBtn.onclick = () => {
           const blob = new Blob([output.textContent], { type: "text/x-tex" });
