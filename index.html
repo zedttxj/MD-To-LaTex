@@ -190,7 +190,8 @@
           return inner;
         })
         .replace(/\\\$/g,'\$\\')
-        .replace(/\\\^\{\}/g,'^');
+        .replace(/\\\^\{\}/g,'^')
+        .replace(/\$==\$/g, '==');
     }
     convertBtn.onclick = async () => {
       const url = urlInput.value.trim();
