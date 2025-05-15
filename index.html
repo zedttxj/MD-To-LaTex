@@ -89,7 +89,7 @@
         .replace(/[⁰¹²³⁴⁵⁶⁷⁸⁹]+/g, match => `^{${match}}`)
         .replace(/[₀₁₂₃₄₅₆₇₈₉₍₎]{1}[₀₁₂₃₄₅₆₇₈₉₍,₎^\s]*/g, match => `_{${match}}`)
         .replace(/\\textbar/g,'\\bar')
-        .replace(/\$.*?[a-zA-z]{4}.*\$/g, (match) => {
+        .replace(/\$.*?[a-zA-Z]{4}.*\$/g, (match) => {
           const inner = match.replace(/\$/g, '');
           return inner;
         })
