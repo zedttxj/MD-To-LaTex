@@ -82,7 +82,7 @@
             return `_{${inner}}`;
         })
         .replace(/[₍₎μ𝜈νλƒ𝐴𝐵𝐶𝐷𝐸𝐹𝐺𝐻𝐼𝐽𝐾𝐿𝑀𝑁𝑂𝑃𝑄𝑅𝑆𝑇𝑈𝑉𝑊𝑋𝑌𝑍₀-₉⁰-⁹′⊙⨂⊕⊔∈≠+×*/^=_|]+/g, match => `$${match}$`)
-        .replace(/[\{(].*?\$+.*[\})]/g, (match) => {
+        .replace(/[\{(ƒ𝐴𝐵𝐶𝐷𝐸𝐹𝐺𝐻𝐼𝐽𝐾𝐿𝑀𝑁𝑂𝑃𝑄𝑅𝑆𝑇𝑈𝑉𝑊𝑋𝑌𝑍].*?\$+.*[\})]/g, (match) => {
           const inner = match.slice(1, -1).replace(/\$/g, '');  // remove outer braces and all $
           return `${match.charAt(0)}\$${inner}\$${match.charAt(-1)}`;  // wrap with exactly one pair of $
         })
