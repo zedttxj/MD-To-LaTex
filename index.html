@@ -20,6 +20,7 @@
 
   <button id="convertBtn">Convert</button>
   <button id="downloadTexBtn">Download .tex</button>
+  <button id="copyLatexBtn">📋 Copy LaTeX</button>
   <button id="downloadZipBtn">📦 Download LaTeX + Images ZIP</button>
 
   <h2>LaTeX Output</h2>
@@ -303,6 +304,17 @@
         statusimage.textContent = "❌ Error: " + err.message;
         console.error(err);
       }
+      
+      document.getElementById("copyLatexBtn").onclick = async () => {
+        const text = document.getElementById("latexOutput").textContent;
+        try {
+          await navigator.clipboard.writeText(text);
+          alert("✅ LaTeX copied to clipboard!");
+        } catch (err) {
+          alert("❌ Failed to copy. Your browser might not support clipboard access.");
+          console.error(err);
+        }
+      };
     };
   </script>
 </body>
