@@ -1,4 +1,3 @@
-
 # GitHub Markdown to LaTeX Converter
 
 This [tool](https://zedttxj.github.io//MD-To-LaTex/) lets you fetch any public Markdown file from GitHub (via raw URL) and convert it automatically to LaTeX using [pandoc-wasm](https://github.com/niklasmh/pandoc-wasm).
@@ -8,9 +7,12 @@ This [tool](https://zedttxj.github.io//MD-To-LaTex/) lets you fetch any public M
 - Convert `.md` files to LaTeX through web browser
 - Paste any **raw GitHub Markdown URL**
 - One-click **download as .tex**
+- Converts Unicode math symbols to LaTeX math mode
 - Sandbox version for adjusting mathematics translation and MD adjustment
 - No installation required
-- ZIP Packaging
+- ZIP Packaging with external images (CORS proxy included) for local compilation
+
+The core regex rules for math filtering were developed iteratively using a sandbox interface.
 
 ## How to Use
 
@@ -29,3 +31,12 @@ This [tool](https://zedttxj.github.io//MD-To-LaTex/) lets you fetch any public M
 ![{16141B28-455A-40F6-BEF7-AF685DF56F5E}](https://github.com/user-attachments/assets/c83d353a-f74b-4f87-8178-efb2d1f44ea2)
 5. Click `Compile` (or `Recompile`):  
 ![{EB372ABA-BDA8-4984-BFF6-37CEB2C83BAA}](https://github.com/user-attachments/assets/44700280-2e49-496c-b65b-88f55130f271)
+
+# Conclusion
+
+This approach enables researchers and students to retain the simplicity of Markdown while producing LaTeX-ready submissions for conferences and journals.
+
+# References
+
+[1] Pandoc - A Universal Document Converter. https://pandoc.org  
+[2] IEEE LaTeX Template. https://www.overleaf.com/latex/templates/ieee-conference-template/grfzhhncsfqn
