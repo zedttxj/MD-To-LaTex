@@ -25,7 +25,7 @@ This [tool](https://zedttxj.github.io//MD-To-LaTex/) lets you fetch any public M
 ![{EC2BBFC2-6BB1-4832-9EF9-B0C663C72BBB}](https://github.com/user-attachments/assets/f3f454d0-db18-4837-ad8a-9f19d1b420fc)  
 3. Select `Open as Template`.
 ![{88794655-F556-446A-AC0E-34ADA8C2202E}](https://github.com/user-attachments/assets/2f61c11d-5b79-4284-a877-1edfb97e3cc5)
-4. Choose one `\section` and paste your LaTeX code from the [converter](https://zedttxj.github.io//MD-To-LaTex/). I chose `\section{Ease of Use}` in this case.
+4. Choose one `\section` and paste your LaTeX code from the [converter](https://zedttxj.github.io//MD-To-LaTex/). I chose `\section{Ease of Use}` in this case:  
 ![{16141B28-455A-40F6-BEF7-AF685DF56F5E}](https://github.com/user-attachments/assets/c83d353a-f74b-4f87-8178-efb2d1f44ea2)
 5. Click `Compile` (or `Recompile`):  
 ![{EB372ABA-BDA8-4984-BFF6-37CEB2C83BAA}](https://github.com/user-attachments/assets/44700280-2e49-496c-b65b-88f55130f271)
