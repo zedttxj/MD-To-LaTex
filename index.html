@@ -88,6 +88,7 @@
         })
         .replace(/[⁰¹²³⁴⁵⁶⁷⁸⁹]+/g, match => `^{${match}}`)
         .replace(/[₀₁ₕₖₗₘₙₚₜₛᵢₐⱼ₂₃₄₅₆₇₈₉₍₎]{1}[₀₁ₕₖₗₘₙₚₜₛᵢⱼₐ₂₃₄₅₆₇₈₉₍,₎^\s]*/g, match => `_{${match}}`)
+        .replace(/,}/g,'},')
         .replace(/\{\$√([^{}]*)\$\}/g, match => '\{\$\\sqrt\{' + match.slice(4,-3) + '\}\$\}')
         .replace(/\$[^{}]*[a-zA-Z]{4}[^{}]*\$/g, (match) => {
           const inner = match.replace(/\$/g, '')
